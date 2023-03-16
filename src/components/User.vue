@@ -97,21 +97,26 @@ export default {
   &__container {
     &-contents {
       padding-top: 2rem;
-      display: grid;
+      display: flex;
+      flex-direction: column;
       gap: 3rem 2rem;
       margin: 3rem 0;
 
       @media (min-width: 992px) {
-        grid-template-columns: 1fr 1fr;
+        flex-direction: row;
       }
 
       &--left {
+        width: 50%;
         background: var(--clr-white);
         padding: 1.5rem 2rem;
         border-top-right-radius: var(--radius);
         border-bottom-left-radius: var(--radius);
         border-bottom-right-radius: var(--radius);
         position: relative;
+        @media screen and (max-width: 992px) {
+          width: 100%;
+        }
         &::before {
           content: "user";
           position: absolute;
@@ -134,8 +139,8 @@ export default {
           column-gap: 1rem;
           margin-bottom: 1rem;
           img {
-            width: 75px;
-            height: 75px;
+            width: 60px;
+            height: 60px;
             border-radius: 50%;
           }
           h4 {
@@ -190,11 +195,15 @@ export default {
       }
 
       &--right {
+        width: 50%;
         background: var(--clr-white);
         border-top-right-radius: var(--radius);
         border-bottom-left-radius: var(--radius);
         border-bottom-right-radius: var(--radius);
         position: relative;
+        @media screen and (max-width: 992px) {
+          width: 100%;
+        }
 
         &::before {
           content: " followers";
