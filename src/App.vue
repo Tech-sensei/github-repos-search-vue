@@ -22,9 +22,9 @@ export default {
 
   data() {
     return {
-      githubUsers: mockUser,
-      followers: mockFollowers,
-      repos: mockRepos,
+      githubUsers: JSON.parse(localStorage.getItem("githubUsers")) || mockUser,
+      followers: JSON.parse(localStorage.getItem("followers")) || mockFollowers,
+      repos: JSON.parse(localStorage.getItem("repos")) || mockRepos,
       requests: 0,
       isLoading: false,
       error: { show: false, msg: "" },
@@ -50,12 +50,17 @@ export default {
           const { login, followers_url } = this.githubUsers;
           // repos
           axios(`${rootUrl}/users/${login}/repos?per_page=100`).then(
-            (response) => (this.repos = response.data)
+            (response) => {
+              this.repos = response.data;
+              localStorage.setItem("repos", JSON.stringify(this.repos)); // store repos in local storage
+            }
           );
           // followers
-          axios(`${followers_url}?per_page=100`).then(
-            (response) => (this.followers = response.data)
-          );
+          axios(`${followers_url}?per_page=100`).then((response) => {
+            this.followers = response.data;
+            localStorage.setItem("followers", JSON.stringify(this.followers)); // store followers in local storage
+          });
+          localStorage.setItem("githubUsers", JSON.stringify(this.githubUsers)); // store user in local storage
           this.toggleError(false); // set error flag to false if response is successful
         } else {
           this.toggleError(true, "there is no user with that username");
@@ -94,7 +99,9 @@ export default {
   },
 
   created() {
-    this.searchGithubUser();
+    if (!localStorage.getItem("githubUsers")) {
+      this.searchGithubUser();
+    }
     this.checkRequests();
   },
 };

@@ -27,13 +27,22 @@
       </div>
 
       <div class="repos__container-pagination">
+        <button v-if="startPage > 1" @click="changePage(startPage - 1)">
+          ⏪
+        </button>
         <button
-          v-for="page in totalPages"
+          v-for="page in displayedPages"
           :key="page"
           :class="{ active: page === currentPage }"
           @click="changePage(page)"
         >
           {{ page }}
+        </button>
+        <button
+          v-if="endPage < totalPages && !isLoading"
+          @click="changePage(endPage + 1)"
+        >
+          ⏩
         </button>
       </div>
     </article>
@@ -49,6 +58,8 @@ export default {
       search: "",
       currentPage: 1,
       reposPerPage: 6,
+      startPage: 1,
+      endPage: 5,
     };
   },
 
@@ -63,6 +74,14 @@ export default {
       return Math.ceil(this.repos.length / this.reposPerPage);
     },
 
+    displayedPages() {
+      const pages = [];
+      for (let i = this.startPage; i <= this.endPage; i++) {
+        pages.push(i);
+      }
+      return pages;
+    },
+
     displayedRepos() {
       const startIndex = (this.currentPage - 1) * this.reposPerPage;
       const endIndex = startIndex + this.reposPerPage;
@@ -72,7 +91,32 @@ export default {
 
   methods: {
     changePage(page) {
-      this.currentPage = page;
+      if (page === "next") {
+        if (this.currentPage < this.totalPages) {
+          this.currentPage += 1;
+          if (this.currentPage > this.endPage) {
+            this.startPage += 1;
+            this.endPage += 1;
+          }
+        }
+      } else if (page === "prev") {
+        if (this.currentPage > 1) {
+          this.currentPage -= 1;
+          if (this.currentPage < this.startPage) {
+            this.startPage -= 1;
+            this.endPage -= 1;
+          }
+        }
+      } else {
+        this.currentPage = page;
+        if (page > this.endPage) {
+          this.startPage += 1;
+          this.endPage += 1;
+        } else if (page < this.startPage) {
+          this.startPage -= 1;
+          this.endPage -= 1;
+        }
+      }
     },
   },
 };
